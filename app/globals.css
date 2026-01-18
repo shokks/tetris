@@ -73,34 +73,48 @@ body {
   color: var(--accent);
   margin: 0 0 8px 0;
   text-align: center;
+  opacity: 0.8;
+  letter-spacing: 1px;
 }
 
 .score-panel {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
 }
 
 .score-item {
-  background: var(--board-bg);
-  padding: 10px;
-  border-radius: 4px;
+  background: linear-gradient(145deg, rgba(26, 26, 46, 0.9), rgba(15, 15, 35, 0.9));
+  padding: 10px 12px;
+  border-radius: 6px;
   text-align: center;
+  border: 1px solid rgba(0, 240, 240, 0.1);
+}
+
+.score-item:first-child {
+  border-color: rgba(0, 240, 240, 0.3);
+  background: linear-gradient(145deg, rgba(26, 26, 46, 1), rgba(0, 240, 240, 0.05));
+}
+
+.score-item:first-child .score-value {
+  color: var(--accent);
+  text-shadow: 0 0 10px rgba(0, 240, 240, 0.3);
 }
 
 .score-value {
-  font-size: 10px;
+  font-size: 11px;
   margin: 0;
   color: #fff;
 }
 
 .next-piece-container {
-  background: var(--board-bg);
-  padding: 10px;
-  border-radius: 4px;
+  background: linear-gradient(145deg, rgba(26, 26, 46, 0.9), rgba(15, 15, 35, 0.9));
+  padding: 12px;
+  border-radius: 6px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  border: 1px solid rgba(0, 240, 240, 0.2);
 }
 
 .next-piece-grid {
@@ -323,30 +337,45 @@ body {
 
 .touch-controls {
   display: none;
-  margin-top: 16px;
+  margin-top: 20px;
   width: 100%;
-  max-width: 320px;
+  max-width: 340px;
+  padding: 0 8px;
 }
 
 .controls-wrapper {
   display: flex;
   justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+/* Control group with label */
+.control-group {
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 6px;
+}
+
+.control-label {
+  font-size: 7px;
+  color: rgba(0, 240, 240, 0.5);
+  letter-spacing: 1px;
 }
 
 /* Move buttons (left/right) */
 .move-buttons {
   display: flex;
-  gap: 8px;
+  gap: 6px;
 }
 
 /* Common control button style */
 .control-btn {
   background: var(--board-bg);
   color: var(--accent);
-  border: 2px solid var(--accent);
-  border-radius: 12px;
+  border: 2px solid rgba(0, 240, 240, 0.4);
+  border-radius: 14px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -354,55 +383,47 @@ body {
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
-  transition: all 0.1s ease;
+  transition: all 0.15s ease;
 }
 
 .control-btn:active {
   background: var(--accent);
-  color: #000;
-  transform: scale(0.95);
+  color: var(--game-background);
+  transform: scale(0.92);
+  border-color: var(--accent);
 }
 
-.control-btn svg {
-  width: 28px;
-  height: 28px;
-}
-
-/* Move buttons */
+/* Move buttons - secondary importance */
 .move-btn {
-  width: 56px;
-  height: 56px;
+  width: 52px;
+  height: 52px;
+  background: rgba(26, 26, 46, 0.8);
 }
 
-/* Drop button (center) */
+/* Drop button - medium importance */
 .drop-btn {
-  width: 56px;
-  height: 56px;
-  flex-direction: column;
-  gap: 0;
-  background: linear-gradient(180deg, var(--board-bg) 0%, rgba(0, 240, 240, 0.15) 100%);
+  width: 54px;
+  height: 54px;
+  background: linear-gradient(180deg, var(--board-bg) 0%, rgba(0, 240, 240, 0.1) 100%);
+  border-color: rgba(0, 240, 240, 0.6);
 }
 
-.drop-btn svg {
-  width: 24px;
-  height: 24px;
-  margin: -6px 0;
-}
-
-.drop-btn .drop-icon-second {
-  opacity: 0.6;
-}
-
-/* Rotate button */
+/* Rotate button - primary action, most prominent */
 .rotate-btn {
-  width: 60px;
-  height: 60px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
-  box-shadow: 0 0 12px rgba(0, 240, 240, 0.2);
+  border-color: var(--accent);
+  background: linear-gradient(135deg, var(--board-bg) 0%, rgba(0, 240, 240, 0.15) 100%);
+  box-shadow: 
+    0 0 20px rgba(0, 240, 240, 0.15),
+    inset 0 0 20px rgba(0, 240, 240, 0.05);
 }
 
 .rotate-btn:active {
-  box-shadow: 0 0 20px rgba(0, 240, 240, 0.5);
+  box-shadow: 
+    0 0 30px rgba(0, 240, 240, 0.4),
+    inset 0 0 20px rgba(0, 240, 240, 0.1);
 }
 
 /* Mobile responsive styles */
@@ -484,11 +505,15 @@ body {
 
   .touch-controls {
     display: flex;
-    margin-top: 12px;
+    margin-top: 16px;
   }
 
   .controls-help {
     display: none;
+  }
+
+  .control-label {
+    font-size: 6px;
   }
 
   .modal {
@@ -522,28 +547,31 @@ body {
     height: 16px;
   }
 
-  .move-btn,
+  .move-btn {
+    width: 44px;
+    height: 44px;
+  }
+
   .drop-btn {
-    width: 48px;
-    height: 48px;
+    width: 46px;
+    height: 46px;
   }
 
   .rotate-btn {
-    width: 52px;
-    height: 52px;
-  }
-
-  .control-btn svg {
-    width: 22px;
-    height: 22px;
+    width: 54px;
+    height: 54px;
   }
 
   .controls-wrapper {
-    gap: 8px;
+    gap: 10px;
   }
 
   .move-buttons {
-    gap: 6px;
+    gap: 4px;
+  }
+
+  .control-label {
+    font-size: 5px;
   }
 
   .score-item {

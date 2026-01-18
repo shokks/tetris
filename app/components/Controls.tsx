@@ -1,5 +1,6 @@
 'use client';
 
+import { ChevronLeft, ChevronRight, ChevronsDown, RotateCw } from 'lucide-react';
 import { KeyAction } from '../hooks/useKeyboard';
 
 interface ControlsProps {
@@ -15,57 +16,54 @@ export function Controls({ onAction }: ControlsProps) {
   return (
     <div className="touch-controls">
       <div className="controls-wrapper">
-        {/* Left/Right movement buttons */}
-        <div className="move-buttons">
-          <button
-            className="control-btn move-btn"
-            onTouchStart={handleTouch('moveLeft')}
-            onClick={handleTouch('moveLeft')}
-            aria-label="Move Left"
-          >
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
-            </svg>
-          </button>
-          <button
-            className="control-btn move-btn"
-            onTouchStart={handleTouch('moveRight')}
-            onClick={handleTouch('moveRight')}
-            aria-label="Move Right"
-          >
-            <svg viewBox="0 0 24 24" fill="currentColor">
-              <path d="M8.59 16.59L10 18l6-6-6-6-1.41 1.41L13.17 12z"/>
-            </svg>
-          </button>
+        {/* Left side - Movement */}
+        <div className="control-group">
+          <div className="move-buttons">
+            <button
+              className="control-btn move-btn"
+              onTouchStart={handleTouch('moveLeft')}
+              onClick={handleTouch('moveLeft')}
+              aria-label="Move Left"
+            >
+              <ChevronLeft size={28} strokeWidth={2.5} />
+            </button>
+            <button
+              className="control-btn move-btn"
+              onTouchStart={handleTouch('moveRight')}
+              onClick={handleTouch('moveRight')}
+              aria-label="Move Right"
+            >
+              <ChevronRight size={28} strokeWidth={2.5} />
+            </button>
+          </div>
+          <span className="control-label">MOVE</span>
         </div>
 
-        {/* Drop button - center */}
-        <button
-          className="control-btn drop-btn"
-          onTouchStart={handleTouch('hardDrop')}
-          onClick={handleTouch('hardDrop')}
-          aria-label="Hard Drop"
-        >
-          <svg viewBox="0 0 24 24" fill="currentColor">
-            <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/>
-          </svg>
-          <svg viewBox="0 0 24 24" fill="currentColor" className="drop-icon-second">
-            <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6z"/>
-          </svg>
-        </button>
+        {/* Center - Hard Drop */}
+        <div className="control-group">
+          <button
+            className="control-btn drop-btn"
+            onTouchStart={handleTouch('hardDrop')}
+            onClick={handleTouch('hardDrop')}
+            aria-label="Hard Drop"
+          >
+            <ChevronsDown size={28} strokeWidth={3} />
+          </button>
+          <span className="control-label">DROP</span>
+        </div>
 
-        {/* Rotate button */}
-        <button
-          className="control-btn rotate-btn"
-          onTouchStart={handleTouch('rotateCW')}
-          onClick={handleTouch('rotateCW')}
-          aria-label="Rotate"
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M1 4v6h6"/>
-            <path d="M3.51 15a9 9 0 1014.85-3.36L23 10M1 10l4.64-4.36"/>
-          </svg>
-        </button>
+        {/* Right side - Rotate (Primary action, larger) */}
+        <div className="control-group">
+          <button
+            className="control-btn rotate-btn"
+            onTouchStart={handleTouch('rotateCW')}
+            onClick={handleTouch('rotateCW')}
+            aria-label="Rotate"
+          >
+            <RotateCw size={32} strokeWidth={2.5} />
+          </button>
+          <span className="control-label">ROTATE</span>
+        </div>
       </div>
     </div>
   );
