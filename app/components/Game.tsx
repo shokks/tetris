@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useSyncExternalStore } from 'react';
 import { Board } from './Board';
 import { NextPiece } from './NextPiece';
 import { ScorePanel } from './ScorePanel';
@@ -35,6 +35,18 @@ import { getHighScore, updateHighScoreIfNeeded } from '../lib/storage';
 
 type GameStatus = 'idle' | 'playing' | 'paused' | 'gameover';
 
+// Hook to safely read localStorage after hydration
+function useStoredHighScore() {
+  return useSyncExternalStore(
+    (callback) => {
+      window.addEventListener('storage', callback);
+      return () => window.removeEventListener('storage', callback);
+    },
+    () => getHighScore(),
+    () => 0 // Server snapshot
+  );
+}
+
 interface LineClearCelebration {
   rows: number[];
   score: number;
@@ -50,15 +62,14 @@ export function Game() {
   const [score, setScore] = useState(0);
   const [level, setLevel] = useState(0);
   const [lines, setLines] = useState(0);
-  const [highScore, setHighScore] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return getHighScore();
-    }
-    return 0;
-  });
+  const storedHighScore = useStoredHighScore();
+  const [highScore, setHighScore] = useState(0);
   const [gameStatus, setGameStatus] = useState<GameStatus>('idle');
   const [isNewHighScore, setIsNewHighScore] = useState(false);
   const [celebration, setCelebration] = useState<LineClearCelebration | null>(null);
+
+  // Sync stored high score after hydration
+  const displayHighScore = Math.max(highScore, storedHighScore);
 
   // Clear celebration after animation
   useEffect(() => {
@@ -248,7 +259,7 @@ export function Game() {
     <div className="game-container">
       <div className="game-layout">
         <div className="side-panel left-panel">
-          <ScorePanel score={score} level={level} lines={lines} highScore={highScore} />
+          <ScorePanel score={score} level={level} lines={lines} highScore={displayHighScore} />
         </div>
         <div className="board-wrapper">
           <Board 
@@ -293,7 +304,7 @@ export function Game() {
           {gameStatus === 'gameover' && (
             <GameOver
               score={score}
-              highScore={highScore}
+              highScore={displayHighScore}
               isNewHighScore={isNewHighScore}
               onRestart={startGame}
             />
