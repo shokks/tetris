@@ -12,11 +12,32 @@ export function NextPiece({ type }: NextPieceProps) {
   const shape = TETROMINO_SHAPES[type][0];
   const color = TETROMINO_COLORS[type];
 
+  // Trim empty rows from shape for better display
+  const nonEmptyRows = shape.filter(row => row.some(cell => cell !== 0));
+  
+  // Trim empty columns for better centering
+  const nonEmptyCols: number[] = [];
+  if (nonEmptyRows.length > 0) {
+    for (let i = 0; i < nonEmptyRows[0].length; i++) {
+      if (nonEmptyRows.some(row => row[i] !== 0)) {
+        nonEmptyCols.push(i);
+      }
+    }
+  }
+
+  const minCol = Math.min(...nonEmptyCols);
+  const maxCol = Math.max(...nonEmptyCols);
+  
+  const displayShape = nonEmptyRows.map(row => 
+    row.slice(minCol, maxCol + 1)
+  );
+
+
   return (
     <div className="next-piece-container">
       <h3 className="panel-title">NEXT</h3>
       <div className="next-piece-grid">
-        {shape.map((row, rowIdx) => (
+        {displayShape.map((row, rowIdx) => (
           <div key={rowIdx} className="next-piece-row">
             {row.map((cell, colIdx) => (
               <div

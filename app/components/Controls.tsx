@@ -25,7 +25,7 @@ export function Controls({ onAction }: ControlsProps) {
               onClick={handleTouch('moveLeft')}
               aria-label="Move Left"
             >
-              <ChevronLeft size={28} strokeWidth={2.5} />
+              <ChevronLeft size={26} strokeWidth={2.5} />
             </button>
             <button
               className="control-btn move-btn"
@@ -33,7 +33,7 @@ export function Controls({ onAction }: ControlsProps) {
               onClick={handleTouch('moveRight')}
               aria-label="Move Right"
             >
-              <ChevronRight size={28} strokeWidth={2.5} />
+              <ChevronRight size={26} strokeWidth={2.5} />
             </button>
           </div>
           <span className="control-label">MOVE</span>
@@ -47,7 +47,7 @@ export function Controls({ onAction }: ControlsProps) {
             onClick={handleTouch('hardDrop')}
             aria-label="Hard Drop"
           >
-            <ChevronsDown size={28} strokeWidth={3} />
+            <ChevronsDown size={30} strokeWidth={3} />
           </button>
           <span className="control-label">DROP</span>
         </div>
@@ -60,7 +60,7 @@ export function Controls({ onAction }: ControlsProps) {
             onClick={handleTouch('rotateCW')}
             aria-label="Rotate"
           >
-            <RotateCw size={32} strokeWidth={2.5} />
+            <RotateCw size={34} strokeWidth={2.5} />
           </button>
           <span className="control-label">ROTATE</span>
         </div>

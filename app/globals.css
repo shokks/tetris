@@ -5,6 +5,7 @@
   --border-color: #16213e;
   --accent: #00f0f0;
   --game-background: #0f0f23;
+  --glow-intensity: 0.6;
 }
 
 * {
@@ -17,6 +18,60 @@ body {
   padding: 0;
   min-height: 100vh;
   overflow-x: hidden;
+  position: relative;
+}
+
+/* Atmospheric background with starfield */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(2px 2px at 20% 30%, white, transparent),
+    radial-gradient(2px 2px at 60% 70%, white, transparent),
+    radial-gradient(1px 1px at 50% 50%, white, transparent),
+    radial-gradient(1px 1px at 80% 10%, white, transparent),
+    radial-gradient(2px 2px at 90% 60%, white, transparent),
+    radial-gradient(1px 1px at 33% 80%, white, transparent),
+    radial-gradient(1px 1px at 15% 90%, white, transparent);
+  background-size: 200% 200%, 180% 180%, 220% 220%, 190% 190%, 210% 210%, 200% 200%, 195% 195%;
+  background-position: 0% 0%, 100% 100%, 50% 50%, 80% 20%, 10% 90%, 70% 30%, 40% 60%;
+  opacity: 0.15;
+  animation: stars 120s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* CRT scanline effect */
+body::after {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(0, 0, 0, 0.15) 0px,
+    transparent 1px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.15) 3px
+  );
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.3;
+}
+
+@keyframes stars {
+  0% {
+    background-position: 0% 0%, 100% 100%, 50% 50%, 80% 20%, 10% 90%, 70% 30%, 40% 60%;
+  }
+  100% {
+    background-position: 100% 100%, 0% 0%, 150% 150%, 180% 120%, 110% 190%, 170% 130%, 140% 160%;
+  }
 }
 
 .game-container {
@@ -28,44 +83,113 @@ body {
   padding: 10px;
   background: var(--game-background);
   color: #cccccc;
+  position: relative;
+  z-index: 1;
+}
+
+/* Ambient glow background */
+.game-container::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(0, 240, 240, 0.08) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: -1;
+  animation: pulse-glow 4s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
 }
 
 .game-layout {
   display: flex;
   align-items: flex-start;
-  gap: 20px;
+  justify-content: center;
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .side-panel {
-  width: 120px;
+  width: 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Ensure symmetric alignment */
+.left-panel {
+  align-items: flex-end;
+}
+
+.right-panel {
+  align-items: flex-start;
 }
 
 .board-wrapper {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
 }
 
 .board-container {
   background: linear-gradient(145deg, #2a2a4a, #1a1a2e);
   padding: 8px;
   border-radius: 4px;
-  box-shadow: 
+  box-shadow:
     inset 4px 4px 8px rgba(0, 0, 0, 0.5),
     inset -2px -2px 4px rgba(255, 255, 255, 0.05),
-    0 0 20px rgba(0, 240, 240, 0.1);
+    0 0 30px rgba(0, 240, 240, 0.2),
+    0 0 60px rgba(0, 240, 240, 0.1),
+    0 8px 32px rgba(0, 0, 0, 0.6);
+  position: relative;
+}
+
+/* Dramatic top glow on board */
+.board-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    var(--accent) 50%,
+    transparent 100%
+  );
+  opacity: 0.6;
+  box-shadow: 0 0 8px var(--accent);
 }
 
 .board {
   display: grid;
-  grid-template-columns: repeat(10, 24px);
-  grid-template-rows: repeat(20, 24px);
+  grid-template-columns: repeat(10, 30px);
+  grid-template-rows: repeat(20, 30px);
   gap: 1px;
   background: #0a0a1a;
+  position: relative;
 }
 
 .cell {
-  width: 24px;
-  height: 24px;
+  width: 30px;
+  height: 30px;
   border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.15s ease;
 }
 
 .panel-title {
@@ -73,14 +197,16 @@ body {
   color: var(--accent);
   margin: 0 0 8px 0;
   text-align: center;
-  opacity: 0.8;
+  opacity: 0.9;
   letter-spacing: 1px;
+  text-shadow: 0 0 8px rgba(0, 240, 240, 0.4);
 }
 
 .score-panel {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  width: 100%;
 }
 
 .score-item {
@@ -89,16 +215,49 @@ body {
   border-radius: 6px;
   text-align: center;
   border: 1px solid rgba(0, 240, 240, 0.1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Subtle inner glow */
+.score-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(0, 240, 240, 0.3),
+    transparent
+  );
 }
 
 .score-item:first-child {
-  border-color: rgba(0, 240, 240, 0.3);
-  background: linear-gradient(145deg, rgba(26, 26, 46, 1), rgba(0, 240, 240, 0.05));
+  border-color: rgba(0, 240, 240, 0.4);
+  background: linear-gradient(145deg, rgba(26, 26, 46, 1), rgba(0, 240, 240, 0.08));
+  box-shadow:
+    0 0 20px rgba(0, 240, 240, 0.1),
+    inset 0 0 20px rgba(0, 240, 240, 0.05);
+}
+
+.score-item:first-child::before {
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(0, 240, 240, 0.6),
+    transparent
+  );
+  height: 2px;
+  box-shadow: 0 0 4px var(--accent);
 }
 
 .score-item:first-child .score-value {
   color: var(--accent);
-  text-shadow: 0 0 10px rgba(0, 240, 240, 0.3);
+  text-shadow:
+    0 0 10px rgba(0, 240, 240, 0.5),
+    0 0 20px rgba(0, 240, 240, 0.3),
+    2px 2px 0 rgba(0, 0, 0, 0.5);
 }
 
 .score-value {
@@ -115,6 +274,23 @@ body {
   flex-direction: column;
   align-items: center;
   border: 1px solid rgba(0, 240, 240, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Top accent line for next piece */
+.next-piece-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(0, 240, 240, 0.4),
+    transparent
+  );
 }
 
 .next-piece-grid {
@@ -148,7 +324,11 @@ body {
 
 .modal {
   text-align: center;
-  padding: 20px;
+  padding: 30px 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 400px;
 }
 
 .modal-title {
@@ -161,7 +341,33 @@ body {
   font-size: 20px;
   color: var(--accent);
   margin: 0 0 30px 0;
-  text-shadow: 0 0 10px var(--accent);
+  text-shadow:
+    0 0 10px var(--accent),
+    0 0 20px var(--accent),
+    0 0 30px rgba(0, 240, 240, 0.5),
+    0 0 40px rgba(0, 240, 240, 0.3),
+    2px 2px 0 rgba(0, 0, 0, 0.8);
+  animation: title-pulse 3s ease-in-out infinite;
+  letter-spacing: 2px;
+}
+
+@keyframes title-pulse {
+  0%, 100% {
+    text-shadow:
+      0 0 10px var(--accent),
+      0 0 20px var(--accent),
+      0 0 30px rgba(0, 240, 240, 0.5),
+      0 0 40px rgba(0, 240, 240, 0.3),
+      2px 2px 0 rgba(0, 0, 0, 0.8);
+  }
+  50% {
+    text-shadow:
+      0 0 15px var(--accent),
+      0 0 30px var(--accent),
+      0 0 45px rgba(0, 240, 240, 0.7),
+      0 0 60px rgba(0, 240, 240, 0.5),
+      2px 2px 0 rgba(0, 0, 0, 0.8);
+  }
 }
 
 .modal-buttons {
@@ -180,11 +386,42 @@ body {
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.2s;
+  box-shadow:
+    0 0 20px rgba(0, 240, 240, 0.3),
+    0 4px 8px rgba(0, 0, 0, 0.5);
+  position: relative;
+  overflow: hidden;
+}
+
+.modal-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: left 0.5s;
 }
 
 .modal-btn:hover {
   transform: scale(1.05);
-  box-shadow: 0 0 15px var(--accent);
+  box-shadow:
+    0 0 30px rgba(0, 240, 240, 0.6),
+    0 0 60px rgba(0, 240, 240, 0.3),
+    0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+.modal-btn:hover::before {
+  left: 100%;
+}
+
+.modal-btn:active {
+  transform: scale(0.98);
 }
 
 .modal-btn-secondary {
@@ -329,25 +566,34 @@ body {
 }
 
 .controls-help {
-  margin-top: 20px;
-  font-size: 6px;
+  margin-top: 24px;
+  font-size: 7px;
   line-height: 2.5;
   color: #888;
+  text-align: left;
+  padding: 0 20px;
+}
+
+.controls-help p {
+  margin: 0;
+  padding: 4px 0;
+  color: rgba(0, 240, 240, 0.6);
 }
 
 .touch-controls {
   display: none;
-  margin-top: 20px;
   width: 100%;
-  max-width: 340px;
-  padding: 0 8px;
+  max-width: 400px;
+  padding: 0;
+  margin: 0 auto;
 }
 
 .controls-wrapper {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 20px;
+  padding: 0 12px;
 }
 
 /* Control group with label */
@@ -355,19 +601,21 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .control-label {
   font-size: 7px;
-  color: rgba(0, 240, 240, 0.5);
-  letter-spacing: 1px;
+  color: rgba(0, 240, 240, 0.6);
+  letter-spacing: 1.5px;
+  text-shadow: 0 0 6px rgba(0, 240, 240, 0.3);
 }
 
 /* Move buttons (left/right) */
 .move-buttons {
   display: flex;
-  gap: 6px;
+  gap: 8px;
+  flex-direction: row;
 }
 
 /* Common control button style */
@@ -384,6 +632,25 @@ body {
   -webkit-user-select: none;
   touch-action: manipulation;
   transition: all 0.15s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* Ripple effect */
+.control-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(0, 240, 240, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
 }
 
 .control-btn:active {
@@ -391,121 +658,197 @@ body {
   color: var(--game-background);
   transform: scale(0.92);
   border-color: var(--accent);
+  box-shadow:
+    0 0 20px rgba(0, 240, 240, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-/* Move buttons - secondary importance */
+.control-btn:active::after {
+  width: 100%;
+  height: 100%;
+  transition: width 0.15s, height 0.15s;
+}
+
+/* Move buttons - tertiary importance */
 .move-btn {
-  width: 52px;
-  height: 52px;
+  width: 56px;
+  height: 56px;
   background: rgba(26, 26, 46, 0.8);
+  border-width: 2px;
+  font-size: 24px;
 }
 
-/* Drop button - medium importance */
+/* Drop button - secondary importance */
 .drop-btn {
-  width: 54px;
-  height: 54px;
+  width: 62px;
+  height: 62px;
   background: linear-gradient(180deg, var(--board-bg) 0%, rgba(0, 240, 240, 0.1) 100%);
   border-color: rgba(0, 240, 240, 0.6);
+  border-width: 2px;
+  border-radius: 16px;
+  font-size: 28px;
 }
 
 /* Rotate button - primary action, most prominent */
 .rotate-btn {
-  width: 64px;
-  height: 64px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
   border-color: var(--accent);
+  border-width: 3px;
   background: linear-gradient(135deg, var(--board-bg) 0%, rgba(0, 240, 240, 0.15) 100%);
-  box-shadow: 
-    0 0 20px rgba(0, 240, 240, 0.15),
-    inset 0 0 20px rgba(0, 240, 240, 0.05);
+  box-shadow:
+    0 0 30px rgba(0, 240, 240, 0.25),
+    0 0 60px rgba(0, 240, 240, 0.15),
+    inset 0 0 20px rgba(0, 240, 240, 0.05),
+    0 4px 12px rgba(0, 0, 0, 0.5);
+  font-size: 32px;
+}
+
+/* Pulsing glow animation for primary button */
+@keyframes button-glow {
+  0%, 100% {
+    box-shadow:
+      0 0 30px rgba(0, 240, 240, 0.25),
+      0 0 60px rgba(0, 240, 240, 0.15),
+      inset 0 0 20px rgba(0, 240, 240, 0.05),
+      0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+  50% {
+    box-shadow:
+      0 0 40px rgba(0, 240, 240, 0.35),
+      0 0 80px rgba(0, 240, 240, 0.2),
+      inset 0 0 30px rgba(0, 240, 240, 0.08),
+      0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+}
+
+.rotate-btn {
+  animation: button-glow 2s ease-in-out infinite;
 }
 
 .rotate-btn:active {
-  box-shadow: 
-    0 0 30px rgba(0, 240, 240, 0.4),
-    inset 0 0 20px rgba(0, 240, 240, 0.1);
+  animation: none;
+  box-shadow:
+    0 0 50px rgba(0, 240, 240, 0.6),
+    0 0 100px rgba(0, 240, 240, 0.4),
+    inset 0 0 30px rgba(0, 240, 240, 0.15),
+    0 2px 8px rgba(0, 0, 0, 0.6);
 }
 
 /* Mobile responsive styles */
 @media (max-width: 600px) {
   .game-container {
-    padding: 8px;
+    padding: 16px;
     justify-content: flex-start;
-    padding-top: 10px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
   }
 
   .game-layout {
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 20px;
+    width: 100%;
+    max-width: 100%;
   }
 
   .side-panel {
     width: 100%;
-    max-width: 220px;
+    max-width: 100%;
+    align-items: center !important;
   }
 
-  /* On mobile: Next piece above board, score below */
-  .left-panel {
-    order: 2;
-  }
-
+  /* Mobile layout order: Next (top) → Board (center) → Score (below) */
   .right-panel {
     order: 0;
   }
 
   .board-wrapper {
     order: 1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
   }
 
+  .left-panel {
+    order: 2;
+  }
+
+  /* Score panel - horizontal row with 4 items */
   .score-panel {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 6px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    width: 100%;
+    padding: 0 4px;
   }
 
   .score-item {
-    flex: 1;
-    min-width: 50px;
-    padding: 6px 8px;
+    padding: 10px 8px;
+    min-width: 0;
+  }
+
+  .score-item:first-child {
+    grid-column: 1 / -1; /* Score takes full width on top */
   }
 
   .score-value {
-    font-size: 8px;
+    font-size: 10px;
   }
 
   .panel-title {
-    font-size: 6px;
-    margin-bottom: 4px;
+    font-size: 7px;
+    margin-bottom: 6px;
   }
 
-  /* Next piece - horizontal layout on mobile */
+  /* Next piece - horizontal compact layout */
   .next-piece-container {
     flex-direction: row;
-    gap: 10px;
-    padding: 8px 12px;
+    gap: 12px;
+    padding: 12px 16px;
+    width: 100%;
+    justify-content: center;
   }
 
   .next-piece-container .panel-title {
     margin: 0;
     display: flex;
     align-items: center;
+    font-size: 8px;
   }
 
   .board {
-    grid-template-columns: repeat(10, 20px);
-    grid-template-rows: repeat(20, 20px);
+    grid-template-columns: repeat(10, 24px);
+    grid-template-rows: repeat(20, 24px);
   }
 
   .cell {
-    width: 20px;
-    height: 20px;
+    width: 24px;
+    height: 24px;
   }
 
   .touch-controls {
     display: flex;
-    margin-top: 16px;
+    justify-content: center;
+    width: 100%;
+    margin-top: 24px;
+    padding: 0;
+  }
+
+  .controls-wrapper {
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: flex-end;
+    gap: 8px;
+    padding: 0 12px;
+  }
+
+  .control-group {
+    flex: 0 0 auto;
   }
 
   .controls-help {
@@ -513,21 +856,27 @@ body {
   }
 
   .control-label {
-    font-size: 6px;
+    font-size: 7px;
+    margin-top: 8px;
   }
 
   .modal {
-    padding: 15px;
+    padding: 20px 16px;
   }
 
   .game-title {
-    font-size: 16px;
-    margin-bottom: 20px;
+    font-size: 18px;
+    margin-bottom: 24px;
   }
 
   .modal-btn {
-    font-size: 8px;
-    padding: 10px 20px;
+    font-size: 9px;
+    padding: 12px 24px;
+  }
+
+  .controls-help {
+    font-size: 6px;
+    margin-top: 20px;
   }
 }
 
@@ -538,40 +887,44 @@ body {
   }
 
   .board {
-    grid-template-columns: repeat(10, 16px);
-    grid-template-rows: repeat(20, 16px);
+    grid-template-columns: repeat(10, 18px);
+    grid-template-rows: repeat(20, 18px);
   }
 
   .cell {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
   }
 
   .move-btn {
-    width: 44px;
-    height: 44px;
+    width: 52px;
+    height: 52px;
+    font-size: 22px;
   }
 
   .drop-btn {
-    width: 46px;
-    height: 46px;
+    width: 56px;
+    height: 56px;
+    font-size: 26px;
   }
 
   .rotate-btn {
-    width: 54px;
-    height: 54px;
+    width: 64px;
+    height: 64px;
+    font-size: 30px;
   }
 
   .controls-wrapper {
     gap: 10px;
+    padding: 0 8px;
   }
 
   .move-buttons {
-    gap: 4px;
+    gap: 6px;
   }
 
   .control-label {
-    font-size: 5px;
+    font-size: 6px;
   }
 
   .score-item {
@@ -590,6 +943,55 @@ body {
   .next-piece-cell {
     width: 12px;
     height: 12px;
+  }
+}
+
+/* Tablet/Medium screens */
+@media (min-width: 601px) and (max-width: 899px) {
+  .game-layout {
+    gap: 20px;
+  }
+
+  .side-panel {
+    width: 130px;
+  }
+}
+
+/* Large desktop screens - bigger board */
+@media (min-width: 900px) {
+  .board {
+    grid-template-columns: repeat(10, 34px);
+    grid-template-rows: repeat(20, 34px);
+  }
+
+  .cell {
+    width: 34px;
+    height: 34px;
+  }
+
+  .side-panel {
+    width: 160px;
+  }
+
+  .game-layout {
+    gap: 32px;
+  }
+
+  .score-value {
+    font-size: 12px;
+  }
+
+  .panel-title {
+    font-size: 9px;
+  }
+
+  .next-piece-cell {
+    width: 18px;
+    height: 18px;
+  }
+
+  .game-title {
+    font-size: 26px;
   }
 }
 
@@ -622,13 +1024,13 @@ body {
   }
 
   .board {
-    grid-template-columns: repeat(10, 18px);
-    grid-template-rows: repeat(20, 18px);
+    grid-template-columns: repeat(10, 22px);
+    grid-template-rows: repeat(20, 22px);
   }
 
   .cell {
-    width: 18px;
-    height: 18px;
+    width: 22px;
+    height: 22px;
   }
 
   .score-panel {
@@ -642,5 +1044,11 @@ body {
 
   .touch-controls {
     display: none;
+  }
+
+  .controls-help {
+    display: block;
+    font-size: 6px;
+    margin-top: 16px;
   }
 }
