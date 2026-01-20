@@ -656,7 +656,7 @@ body::after {
     left: 0;
     right: 0;
     bottom: 0;
-    padding: var(--safe-top) 8px var(--safe-bottom) 8px;
+    padding: var(--safe-top) 8px max(var(--safe-bottom), 20px) 8px; /* Added fallback padding */
     display: flex;
     flex-direction: column;
     overflow: hidden;
