@@ -257,10 +257,21 @@ export function Game() {
 
   return (
     <div className="game-container">
-      <div className="game-layout">
-        <div className="side-panel left-panel">
+      {/* Mobile Header: Score and Next Piece */}
+      <div className="mobile-header">
+        <div className="mobile-score">
           <ScorePanel score={score} level={level} lines={lines} highScore={displayHighScore} />
         </div>
+        <div className="mobile-next">
+          <NextPiece type={nextPiece} />
+        </div>
+      </div>
+
+      <div className="game-layout">
+        <div className="side-panel left-panel desktop-only">
+          <ScorePanel score={score} level={level} lines={lines} highScore={displayHighScore} />
+        </div>
+        
         <div className="board-wrapper">
           <Board 
             board={board} 
@@ -288,7 +299,7 @@ export function Game() {
                 <button className="modal-btn" onClick={startGame}>
                   START GAME
                 </button>
-                <div className="controls-help">
+                <div className="controls-help desktop-only">
                   <p>← → : Move</p>
                   <p>↑ : Rotate</p>
                   <p>↓ : Soft Drop</p>
@@ -310,11 +321,15 @@ export function Game() {
             />
           )}
         </div>
-        <div className="side-panel right-panel">
+
+        <div className="side-panel right-panel desktop-only">
           <NextPiece type={nextPiece} />
         </div>
       </div>
-      <Controls onAction={handleAction} />
+      
+      <div className="mobile-controls-wrapper">
+        <Controls onAction={handleAction} />
+      </div>
     </div>
   );
 }

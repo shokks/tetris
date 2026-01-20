@@ -18,6 +18,11 @@ export function useTouch({ onAction, enabled }: UseTouchProps) {
 
   const handleTouchStart = useCallback((event: TouchEvent) => {
     if (!enabled) return;
+    
+    // Skip if touch originated from control buttons
+    const target = event.target as HTMLElement;
+    if (target.closest('.touch-controls')) return;
+    
     const touch = event.touches[0];
     touchStart.current = {
       x: touch.clientX,
@@ -29,6 +34,10 @@ export function useTouch({ onAction, enabled }: UseTouchProps) {
   const handleTouchEnd = useCallback(
     (event: TouchEvent) => {
       if (!enabled || !touchStart.current) return;
+
+      // Skip if touch originated from control buttons
+      const target = event.target as HTMLElement;
+      if (target.closest('.touch-controls')) return;
 
       const touch = event.changedTouches[0];
       const deltaX = touch.clientX - touchStart.current.x;

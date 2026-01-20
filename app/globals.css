@@ -582,40 +582,6 @@ body::after {
 
 .touch-controls {
   display: none;
-  width: 100%;
-  max-width: 400px;
-  padding: 0;
-  margin: 0 auto;
-}
-
-.controls-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  gap: 20px;
-  padding: 0 12px;
-}
-
-/* Control group with label */
-.control-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-}
-
-.control-label {
-  font-size: 7px;
-  color: rgba(0, 240, 240, 0.6);
-  letter-spacing: 1.5px;
-  text-shadow: 0 0 6px rgba(0, 240, 240, 0.3);
-}
-
-/* Move buttons (left/right) */
-.move-buttons {
-  display: flex;
-  gap: 8px;
-  flex-direction: row;
 }
 
 /* Common control button style */
@@ -623,326 +589,384 @@ body::after {
   background: var(--board-bg);
   color: var(--accent);
   border: 2px solid rgba(0, 240, 240, 0.4);
-  border-radius: 14px;
+  border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   user-select: none;
   -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
-  transition: all 0.15s ease;
+  transition: all 0.1s ease;
   position: relative;
   overflow: hidden;
   box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.5),
+    0 4px 12px rgba(0, 0, 0, 0.5),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-/* Ripple effect */
-.control-btn::after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(0, 240, 240, 0.3);
-  transform: translate(-50%, -50%);
-  transition: width 0.3s, height 0.3s;
 }
 
 .control-btn:active {
   background: var(--accent);
   color: var(--game-background);
-  transform: scale(0.92);
+  transform: scale(0.9);
   border-color: var(--accent);
   box-shadow:
-    0 0 20px rgba(0, 240, 240, 0.6),
+    0 0 25px rgba(0, 240, 240, 0.7),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.control-btn:active::after {
-  width: 100%;
-  height: 100%;
-  transition: width 0.15s, height 0.15s;
-}
-
-/* Move buttons - tertiary importance */
-.move-btn {
-  width: 56px;
-  height: 56px;
-  background: rgba(26, 26, 46, 0.8);
-  border-width: 2px;
-  font-size: 24px;
-}
-
-/* Drop button - secondary importance */
-.drop-btn {
-  width: 62px;
-  height: 62px;
-  background: linear-gradient(180deg, var(--board-bg) 0%, rgba(0, 240, 240, 0.1) 100%);
-  border-color: rgba(0, 240, 240, 0.6);
-  border-width: 2px;
-  border-radius: 16px;
-  font-size: 28px;
-}
-
-/* Rotate button - primary action, most prominent */
-.rotate-btn {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  border-color: var(--accent);
-  border-width: 3px;
-  background: linear-gradient(135deg, var(--board-bg) 0%, rgba(0, 240, 240, 0.15) 100%);
-  box-shadow:
-    0 0 30px rgba(0, 240, 240, 0.25),
-    0 0 60px rgba(0, 240, 240, 0.15),
-    inset 0 0 20px rgba(0, 240, 240, 0.05),
-    0 4px 12px rgba(0, 0, 0, 0.5);
-  font-size: 32px;
-}
-
-/* Pulsing glow animation for primary button */
-@keyframes button-glow {
-  0%, 100% {
-    box-shadow:
-      0 0 30px rgba(0, 240, 240, 0.25),
-      0 0 60px rgba(0, 240, 240, 0.15),
-      inset 0 0 20px rgba(0, 240, 240, 0.05),
-      0 4px 12px rgba(0, 0, 0, 0.5);
-  }
-  50% {
-    box-shadow:
-      0 0 40px rgba(0, 240, 240, 0.35),
-      0 0 80px rgba(0, 240, 240, 0.2),
-      inset 0 0 30px rgba(0, 240, 240, 0.08),
-      0 4px 12px rgba(0, 0, 0, 0.5);
-  }
-}
-
-.rotate-btn {
-  animation: button-glow 2s ease-in-out infinite;
-}
-
-.rotate-btn:active {
-  animation: none;
-  box-shadow:
-    0 0 50px rgba(0, 240, 240, 0.6),
-    0 0 100px rgba(0, 240, 240, 0.4),
-    inset 0 0 30px rgba(0, 240, 240, 0.15),
-    0 2px 8px rgba(0, 0, 0, 0.6);
 }
 
 /* Mobile responsive styles */
 @media (max-width: 600px) {
+  :root {
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --controls-height: 140px; /* buttons area height */
+    --header-height: 80px; /* score + next */
+  }
+
+  html {
+    height: 100%;
+  }
+
+  body {
+    height: 100%;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+  }
+
+  /* Utility classes */
+.desktop-only {
+  display: flex !important;
+}
+
+@media (max-width: 600px) {
+  .desktop-only {
+    display: none !important;
+  }
+}
+
+
   .game-container {
-    padding: 16px;
-    justify-content: flex-start;
-    min-height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: var(--safe-top) 8px var(--safe-bottom) 8px;
     display: flex;
     flex-direction: column;
+    overflow: hidden;
+    height: 100dvh; /* Dynamic viewport height */
+    justify-content: space-between;
   }
 
-  .game-layout {
-    flex-direction: column;
+  /* 1. Top Header Section */
+  .mobile-header {
+    display: flex;
+    flex-direction: row;
     align-items: center;
-    gap: 20px;
+    justify-content: space-between;
     width: 100%;
-    max-width: 100%;
+    height: var(--header-height);
+    flex-shrink: 0;
+    padding: 8px 12px;
+    gap: 12px;
+    background: rgba(15, 15, 35, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(0, 240, 240, 0.1);
+    z-index: 50;
   }
 
-  .side-panel {
-    width: 100%;
-    max-width: 100%;
-    align-items: center !important;
-  }
-
-  /* Mobile layout order: Next (top) → Board (center) → Score (below) */
-  .right-panel {
-    order: 0;
-  }
-
-  .board-wrapper {
-    order: 1;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
-
-  .left-panel {
-    order: 2;
-  }
-
-  /* Score panel - horizontal row with 4 items */
-  .score-panel {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    width: 100%;
-    padding: 0 4px;
-  }
-
-  .score-item {
-    padding: 10px 8px;
+  .mobile-score {
+    flex: 1;
     min-width: 0;
   }
 
+  .mobile-next {
+    flex: 0 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Reuse existing score panel styles but horizontal */
+  .score-panel {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    height: 100%;
+    overflow-x: auto; /* Allow scrolling if really tight */
+    scrollbar-width: none; /* Hide scrollbar */
+  }
+
+  .score-panel::-webkit-scrollbar {
+    display: none;
+  }
+
+  .score-item {
+    flex: 0 0 auto;
+    min-width: 60px;
+    padding: 6px 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 44px;
+    background: rgba(26, 26, 46, 0.6);
+    border: 1px solid rgba(0, 240, 240, 0.2);
+    border-radius: 8px;
+    backdrop-filter: blur(4px);
+  }
+
   .score-item:first-child {
-    grid-column: 1 / -1; /* Score takes full width on top */
+    background: rgba(0, 240, 240, 0.1);
+    border-color: rgba(0, 240, 240, 0.5);
+    box-shadow: 0 0 10px rgba(0, 240, 240, 0.1);
   }
 
   .score-value {
     font-size: 10px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 0 0 5px rgba(0, 240, 240, 0.5);
   }
 
   .panel-title {
     font-size: 7px;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
+    color: var(--accent);
+    opacity: 0.8;
+    letter-spacing: 0.5px;
   }
 
-  /* Next piece - horizontal compact layout */
+  /* Next piece compact */
   .next-piece-container {
-    flex-direction: row;
-    gap: 12px;
-    padding: 12px 16px;
-    width: 100%;
+    height: 44px;
+    width: 44px;
+    padding: 2px;
+    display: flex;
+    align-items: center;
     justify-content: center;
+    background: rgba(26, 26, 46, 0.6);
+    border: 1px solid rgba(0, 240, 240, 0.2);
+    border-radius: 8px;
   }
 
   .next-piece-container .panel-title {
-    margin: 0;
+    display: none; /* Hide title for compactness */
+  }
+
+  .next-piece-cell {
+    width: 8px;
+    height: 8px;
+    border-width: 0.5px;
+  }
+
+  /* 2. Game Board Section - Flexible */
+  .game-layout {
+    flex: 1;
+    width: 100%;
     display: flex;
     align-items: center;
-    font-size: 8px;
+    justify-content: center;
+    overflow: hidden;
+    margin: 0;
+    min-height: 0;
+    padding: 4px 0;
+    background: rgba(26, 26, 46, 0.6);
+    border: 1px solid rgba(0, 240, 240, 0.2);
+    border-radius: 8px;
+  }
+
+  .board-wrapper {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .board-container {
+    padding: 4px;
+    height: 100%;
+    width: auto;
+    aspect-ratio: 10 / 20;
+    display: flex;
+    flex-direction: column;
   }
 
   .board {
-    grid-template-columns: repeat(10, 24px);
-    grid-template-rows: repeat(20, 24px);
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(10, 1fr);
+    grid-template-rows: repeat(20, 1fr);
+    gap: 1px;
   }
 
   .cell {
-    width: 24px;
-    height: 24px;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* 3. Controls Section - Single Row Layout */
+  .mobile-controls-wrapper {
+    height: var(--controls-height);
+    width: 100%;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 100;
+    background: rgba(15, 15, 35, 0.8);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(0, 240, 240, 0.1);
   }
 
   .touch-controls {
     display: flex;
     justify-content: center;
+    align-items: center;
     width: 100%;
-    margin-top: 24px;
-    padding: 0;
+    height: 100%;
+    padding: 0 16px;
+    gap: 12px;
   }
 
-  .controls-wrapper {
-    width: 100%;
-    max-width: 100%;
+  .control-panel {
     display: flex;
-    justify-content: space-evenly;
-    align-items: flex-end;
-    gap: 8px;
-    padding: 0 12px;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
   }
 
-  .control-group {
-    flex: 0 0 auto;
+  .left-panel-controls, .right-panel-controls {
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    align-items: center;
+    width: auto;
+    height: auto;
+    position: static;
+  }
+  
+  .right-panel-controls {
+    margin-left: auto;
   }
 
-  .controls-help {
-    display: none;
+  /* Button Styles */
+  .dpad-btn {
+    position: static;
+    transform: none;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, rgba(26, 26, 46, 0.9), rgba(15, 15, 35, 0.9));
+    border: 2px solid rgba(0, 240, 240, 0.4);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 0 10px rgba(0, 240, 240, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Order: Left, Down, Right */
+  .dpad-left { order: 1; margin: 0; }
+  .dpad-down { order: 2; margin: 0; }
+  .dpad-right { order: 3; margin: 0; }
+  
+  /* Reset old absolute positioning */
+  .dpad-left, .dpad-right, .dpad-down {
+    top: auto; left: auto; right: auto; bottom: auto;
+    transform: none;
   }
 
-  .control-label {
-    font-size: 7px;
-    margin-top: 8px;
+  .action-btn {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(145deg, rgba(0, 240, 240, 0.15), rgba(0, 240, 240, 0.05));
+    border: 2px solid rgba(0, 240, 240, 0.6);
+    box-shadow: 0 0 15px rgba(0, 240, 240, 0.2), inset 0 0 10px rgba(0, 240, 240, 0.1);
   }
 
+  .action-btn.rotate-btn {
+    width: 64px;
+    height: 64px;
+    border-color: #f0f000;
+    color: #f0f000;
+    background: linear-gradient(145deg, rgba(240, 240, 0, 0.15), rgba(240, 240, 0, 0.05));
+    box-shadow: 0 0 15px rgba(240, 240, 0, 0.2), inset 0 0 10px rgba(240, 240, 0, 0.1);
+  }
+
+  .action-btn:active, .dpad-btn:active {
+    transform: scale(0.92);
+    filter: brightness(1.2);
+  }
+
+  /* Modal Adjustments */
   .modal {
-    padding: 20px 16px;
+    padding: 24px;
+    width: 90%;
+    background: rgba(15, 15, 35, 0.95);
+    border: 1px solid var(--accent);
+    box-shadow: 0 0 30px rgba(0, 240, 240, 0.2);
+    backdrop-filter: blur(10px);
   }
 
   .game-title {
-    font-size: 18px;
+    font-size: 28px;
     margin-bottom: 24px;
   }
 
   .modal-btn {
-    font-size: 9px;
-    padding: 12px 24px;
-  }
-
-  .controls-help {
-    font-size: 6px;
-    margin-top: 20px;
+    padding: 16px;
+    font-size: 16px;
+    width: 100%;
+    margin-top: 12px;
   }
 }
 
-/* Extra small screens */
+/* Extra small screens adjustments */
 @media (max-width: 380px) {
-  .game-container {
-    padding: 5px;
+  :root {
+    --controls-height: 100px;
+    --header-height: 60px;
   }
-
-  .board {
-    grid-template-columns: repeat(10, 18px);
-    grid-template-rows: repeat(20, 18px);
-  }
-
-  .cell {
-    width: 18px;
-    height: 18px;
-  }
-
-  .move-btn {
-    width: 52px;
-    height: 52px;
-    font-size: 22px;
-  }
-
-  .drop-btn {
-    width: 56px;
-    height: 56px;
-    font-size: 26px;
-  }
-
-  .rotate-btn {
-    width: 64px;
-    height: 64px;
-    font-size: 30px;
-  }
-
-  .controls-wrapper {
-    gap: 10px;
-    padding: 0 8px;
-  }
-
-  .move-buttons {
-    gap: 6px;
-  }
-
-  .control-label {
-    font-size: 6px;
-  }
-
+  
   .score-item {
-    min-width: 45px;
-    padding: 5px 6px;
+    min-width: 50px;
+    padding: 4px;
+    height: 38px;
   }
-
+  
   .score-value {
-    font-size: 7px;
+    font-size: 9px;
+  }
+  
+  .next-piece-container {
+    width: 38px;
+    height: 38px;
   }
 
-  .panel-title {
-    font-size: 5px;
+  .dpad-btn {
+    width: 44px;
+    height: 44px;
   }
 
-  .next-piece-cell {
-    width: 12px;
-    height: 12px;
+  .action-btn, .action-btn.rotate-btn {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+/* Hide mobile elements on desktop */
+@media (min-width: 601px) {
+  .mobile-header, .mobile-controls-wrapper {
+    display: none !important;
   }
 }
 

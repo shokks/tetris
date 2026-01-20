@@ -1,6 +1,7 @@
 'use client';
 
-import { ChevronLeft, ChevronRight, ChevronsDown, RotateCw } from 'lucide-react';
+import { useRef, useCallback } from 'react';
+import { ChevronLeft, ChevronRight, ChevronDown, ChevronsDown, RotateCw } from 'lucide-react';
 import { KeyAction } from '../hooks/useKeyboard';
 
 interface ControlsProps {
@@ -8,62 +9,71 @@ interface ControlsProps {
 }
 
 export function Controls({ onAction }: ControlsProps) {
-  const handleTouch = (action: KeyAction) => (e: React.TouchEvent | React.MouseEvent) => {
+  const touchedRef = useRef<Set<string>>(new Set());
+
+  const handleTouchStart = useCallback((action: KeyAction) => (e: React.TouchEvent) => {
+    e.preventDefault();
+    touchedRef.current.add(action);
+    onAction(action);
+  }, [onAction]);
+
+  const handleClick = useCallback((action: KeyAction) => (e: React.MouseEvent) => {
+    if (touchedRef.current.has(action)) {
+      touchedRef.current.delete(action);
+      return;
+    }
     e.preventDefault();
     onAction(action);
-  };
+  }, [onAction]);
 
   return (
     <div className="touch-controls">
-      <div className="controls-wrapper">
-        {/* Left side - Movement */}
-        <div className="control-group">
-          <div className="move-buttons">
-            <button
-              className="control-btn move-btn"
-              onTouchStart={handleTouch('moveLeft')}
-              onClick={handleTouch('moveLeft')}
-              aria-label="Move Left"
-            >
-              <ChevronLeft size={26} strokeWidth={2.5} />
-            </button>
-            <button
-              className="control-btn move-btn"
-              onTouchStart={handleTouch('moveRight')}
-              onClick={handleTouch('moveRight')}
-              aria-label="Move Right"
-            >
-              <ChevronRight size={26} strokeWidth={2.5} />
-            </button>
-          </div>
-          <span className="control-label">MOVE</span>
-        </div>
+      {/* Left side - D-pad style movement */}
+      <div className="control-panel left-panel-controls">
+        <button
+          className="control-btn dpad-btn dpad-left"
+          onTouchStart={handleTouchStart('moveLeft')}
+          onClick={handleClick('moveLeft')}
+          aria-label="Move Left"
+        >
+          <ChevronLeft size={28} strokeWidth={3} />
+        </button>
+        <button
+          className="control-btn dpad-btn dpad-down"
+          onTouchStart={handleTouchStart('softDrop')}
+          onClick={handleClick('softDrop')}
+          aria-label="Soft Drop"
+        >
+          <ChevronDown size={28} strokeWidth={3} />
+        </button>
+        <button
+          className="control-btn dpad-btn dpad-right"
+          onTouchStart={handleTouchStart('moveRight')}
+          onClick={handleClick('moveRight')}
+          aria-label="Move Right"
+        >
+          <ChevronRight size={28} strokeWidth={3} />
+        </button>
+      </div>
 
-        {/* Center - Hard Drop */}
-        <div className="control-group">
-          <button
-            className="control-btn drop-btn"
-            onTouchStart={handleTouch('hardDrop')}
-            onClick={handleTouch('hardDrop')}
-            aria-label="Hard Drop"
-          >
-            <ChevronsDown size={30} strokeWidth={3} />
-          </button>
-          <span className="control-label">DROP</span>
-        </div>
-
-        {/* Right side - Rotate (Primary action, larger) */}
-        <div className="control-group">
-          <button
-            className="control-btn rotate-btn"
-            onTouchStart={handleTouch('rotateCW')}
-            onClick={handleTouch('rotateCW')}
-            aria-label="Rotate"
-          >
-            <RotateCw size={34} strokeWidth={2.5} />
-          </button>
-          <span className="control-label">ROTATE</span>
-        </div>
+      {/* Right side - Action buttons */}
+      <div className="control-panel right-panel-controls">
+        <button
+          className="control-btn action-btn drop-btn"
+          onTouchStart={handleTouchStart('hardDrop')}
+          onClick={handleClick('hardDrop')}
+          aria-label="Hard Drop"
+        >
+          <ChevronsDown size={32} strokeWidth={3} />
+        </button>
+        <button
+          className="control-btn action-btn rotate-btn"
+          onTouchStart={handleTouchStart('rotateCW')}
+          onClick={handleClick('rotateCW')}
+          aria-label="Rotate"
+        >
+          <RotateCw size={32} strokeWidth={2.5} />
+        </button>
       </div>
     </div>
   );
